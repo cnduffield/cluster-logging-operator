@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestLokiReceiverCanPushAndQueryLogs(t *testing.T) {
+func TestLokiReceiver(t *testing.T) {
 	c := client.ForTest(t)
 	l := loki.NewReceiver(c.NS.Name, "loki")
 	require.NoError(t, l.Create(c.Client))
@@ -17,14 +17,27 @@ func TestLokiReceiverCanPushAndQueryLogs(t *testing.T) {
 		Stream: map[string]string{"test": "loki"},
 		Values: loki.MakeValues([]string{"hello", "there", "mr. frog"}),
 	}
-	require.NoError(t, l.Push(sv))
+	require.NoError(t, l.Push("tenant", sv))
 
-	labels, err := l.Labels()
-	assert.NoError(t, err)
-	assert.ElementsMatch(t, []string{"__name__", "test"}, labels)
+	t.Run("canPushAndQuery", func(t *testing.T) {
+		labels, err := l.Labels("tenant")
+		assert.NoError(t, err)
+		assert.ElementsMatch(t, []string{"__name__", "test"}, labels)
 
-	result, err := l.QueryUntil(`{test="loki"}`, "", 3)
-	require.NoError(t, err)
-	require.Len(t, result, 1)
-	assert.Equal(t, sv.Lines(), result[0].Lines())
+		result, err := l.QueryUntil(`{test="loki"}`, "tenant", 3)
+		require.NoError(t, err)
+		require.Len(t, result, 1)
+		assert.Equal(t, sv.Lines(), result[0].Lines())
+	})
+
+	t.Run("respectsTenancy", func(t *testing.T) {
+		result, err := l.QueryUntil(`{test="loki"}`, "tenant", 1)
+		require.NoError(t, err)
+		assert.Equal(t, []string{"hello"}, result[0].Lines())
+
+		// Different tenat should not get any logs.
+		result, err = l.Query(`{test="loki"}`, "nottenant", 1)
+		require.NoError(t, err)
+		assert.Equal(t, len(result), 0)
+	})
 }
