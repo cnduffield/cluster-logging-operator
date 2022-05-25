@@ -2,6 +2,7 @@ package k8shandler
 
 import (
 	"context"
+
 	"github.com/openshift/cluster-logging-operator/internal/collector/common"
 	"github.com/openshift/cluster-logging-operator/internal/utils"
 
@@ -105,6 +106,7 @@ var _ = Describe("Reconciling", func() {
 				}
 			)
 			BeforeEach(func() {
+				utils.SetMockImageEnv()
 				client = fake.NewFakeClient( //nolint
 					cluster,
 					fluentdSecret,

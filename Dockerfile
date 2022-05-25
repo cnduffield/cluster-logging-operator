@@ -18,7 +18,6 @@ COPY ${REMOTE_SOURCE}/go.mod ${REMOTE_SOURCE}/go.sum .
 RUN go mod download
 
 COPY ${REMOTE_SOURCE}/.bingo .bingo
-COPY ${REMOTE_SOURCE}/Makefile ./Makefile
 COPY ${REMOTE_SOURCE}/must-gather ./must-gather
 COPY ${REMOTE_SOURCE}/version ./version
 COPY ${REMOTE_SOURCE}/scripts ./scripts
@@ -30,8 +29,7 @@ COPY ${REMOTE_SOURCE}/controllers ./controllers
 COPY ${REMOTE_SOURCE}/internal ./internal
 
 USER 0
-RUN make build
-
+RUN go build -mod=readonly -o bin/cluster-logging-operator
 
 #@follow_tag(registry-proxy.engineering.redhat.com/rh-osbs/openshift-ose-cli:v4.8)
 FROM quay.io/openshift/origin-cli:4.8 AS origincli
@@ -53,8 +51,6 @@ COPY --from=builder /go/src/github.com/openshift/cluster-logging-operator/bin/cl
 COPY --from=builder /go/src/github.com/openshift/cluster-logging-operator/scripts/* /usr/bin/scripts/
 RUN mkdir -p /usr/share/logging/
 COPY --from=builder /go/src/github.com/openshift/cluster-logging-operator/files/ /usr/share/logging/
-
-COPY --from=builder /go/src/github.com/openshift/cluster-logging-operator/manifests /manifests
 
 COPY --from=origincli /usr/bin/oc /usr/bin
 COPY --from=builder /go/src/github.com/openshift/cluster-logging-operator/must-gather/collection-scripts/* /usr/bin/

@@ -5,9 +5,6 @@ FROM registry.redhat.io/ubi8:8.5
 WORKDIR /
 COPY manifests/ /manifests
 
-RUN chmod -R g+w /manifests && \
-  rm /manifests/*/kustomization.yaml /manifests/*/crd-v1-singleton-patch.yaml /manifests/*/crd-v1-clusterloggings-patches.yaml
-
 COPY olm_deploy/scripts/registry-init.sh olm_deploy/scripts/env.sh /scripts/
 
 COPY --from=registry-builder /bin/initializer /usr/bin/initializer

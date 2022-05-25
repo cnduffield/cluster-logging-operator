@@ -12,6 +12,7 @@ test and verify the OpenShift logging stack.
 1. Ensure `oc`, `podman`, `ansible-playbook` are in your PATH
 1. Stand up an OpenShift cluster
 1. Login to the cluster with a user that has elevated permissions (e.g. `kube:admin`)
+1. Deploy logging: `cd ../..; make deploy deploy-elastic`
 
 ## Running a Test
 The default test only verifies that no messages are lost from a single application generating
@@ -25,8 +26,6 @@ Variations to the defaults can be made by modifying the following:
 
 | Parameter | Default |Description |
 |----|----|---|
-| `DO_SETUP` | true | Deploy cluster logging |
-| `DO_CLEANUP` | true | Remove all artifacts of cluster logging |
 | `MSG_PER_SEC` | 2500 | The message rate of each app producing 1k log messages |
 | `TOT_APPS` | 1 | The number of applications generating logs |
 | `TOT_ITERATIONS` | 3 |The number of successful iteration for the test to PASS |

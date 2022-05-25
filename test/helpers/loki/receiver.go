@@ -19,11 +19,10 @@ import (
 	"golang.org/x/sync/errgroup"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/util/wait"
-	crclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 const (
-	Image        = "grafana/loki:2.2.1"
+	Image        = "grafana/loki:2.5.0"
 	Port         = int32(3100)
 	lokiReceiver = "loki-receiver"
 )
@@ -49,9 +48,10 @@ func NewReceiver(ns, name string) *Receiver {
 	}
 	runtime.Labels(r.Pod)[lokiReceiver] = name
 	r.Pod.Spec.Containers = []corev1.Container{{
-		Name:  name,
-		Image: Image,
-		Ports: []corev1.ContainerPort{{Name: name, ContainerPort: Port}},
+		Name:            name,
+		Image:           Image,
+		ImagePullPolicy: corev1.PullIfNotPresent,
+		Ports:           []corev1.ContainerPort{{Name: name, ContainerPort: Port}},
 	}}
 	r.service.Spec = corev1.ServiceSpec{
 		Selector: map[string]string{lokiReceiver: name},
@@ -64,7 +64,7 @@ func NewReceiver(ns, name string) *Receiver {
 func (r *Receiver) Create(c *client.Client) error {
 	r.timeout = c.Timeout()
 	g := errgroup.Group{}
-	for _, o := range []crclient.Object{r.Pod, r.service, r.route} {
+	for _, o := range []client.Object{r.Pod, r.service, r.route} {
 		if err := c.Create(o); err != nil {
 			return err
 		}

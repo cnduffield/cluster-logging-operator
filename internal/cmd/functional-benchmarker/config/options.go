@@ -4,12 +4,13 @@ import (
 	"bufio"
 	"flag"
 	"fmt"
-	"github.com/ViaQ/logerr/log"
-	"github.com/openshift/cluster-logging-operator/internal/constants"
-	"github.com/openshift/cluster-logging-operator/test"
 	"io/ioutil"
 	"os"
 	"time"
+
+	"github.com/ViaQ/logerr/log"
+	"github.com/openshift/cluster-logging-operator/internal/constants"
+	"github.com/openshift/cluster-logging-operator/test"
 )
 
 const (
@@ -68,7 +69,7 @@ func InitOptions() Options {
 		os.Exit(1)
 	}
 
-	log.MustInit("functional-benchmark")
+	log.MustInitWithOptions("functional-benchmark", []log.Option{log.WithOutput(os.Stderr)})
 	log.SetLogLevel(options.Verbosity)
 	log.V(1).Info("Starting functional benchmarker", "args", options)
 

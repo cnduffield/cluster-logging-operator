@@ -34,16 +34,15 @@ func NewClusterLogForwarderBuilder(clf *logging.ClusterLogForwarder) *ClusterLog
 }
 
 func (b *ClusterLogForwarderBuilder) FromInput(inputName string) *PipelineBuilder {
-	inputSpec := &logging.InputSpec{Name: inputName}
-	if _, ok := b.inputSpecs[inputName]; ok {
-		inputSpec = b.inputSpecs[inputName]
+	inputSpec, ok := b.inputSpecs[inputName]
+	if !ok {
+		inputSpec = &logging.InputSpec{Name: inputName}
 	}
 	pipelineBuilder := &PipelineBuilder{
 		clfb:      b,
 		inputName: inputName,
 		input:     inputSpec,
 	}
-	b.inputSpecs[inputName] = inputSpec
 	return pipelineBuilder
 }
 func (b *ClusterLogForwarderBuilder) FromInputWithVisitor(inputName string, visit InputSpecVisitor) *PipelineBuilder {
@@ -146,7 +145,7 @@ func (p *PipelineBuilder) ToOutputWithVisitor(visit OutputSpecVisiter, outputNam
 		clf.Spec.Outputs = append(clf.Spec.Outputs, *output)
 	}
 
-	if p.input != nil {
+	if p.input != nil && !logging.IsInputTypeName(p.input.Name) {
 		found = false
 		for _, input := range clf.Spec.Inputs {
 			if input.Name == p.input.Name {

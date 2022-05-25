@@ -4,48 +4,35 @@ metadata:
   name: cluster-logging-operator
   labels:
 spec:
-  selector:
-    matchLabels:
-  replicas: 1
-  template:
-    metadata:
-      labels:
-    spec:
-      nodeSelector:
-        kubernetes.io/os: linux
-      serviceAccountName: cluster-logging-operator
-      containers:
-      - name: cluster-logging-operator
-        image: quay.io/openshift-logging/cluster-logging-operator:latest
-        imagePullPolicy: IfNotPresent
-        securityContext:
-          allowPrivilegeEscalation: false
-          livenessProbe:
-            httpGet:
-              path: /healthz
-              port: 8081
-            initialDelaySeconds: 15
-            periodSeconds: 20
-          readinessProbe:
-            httpGet:
-              path: /readyz
-              port: 8081
-            initialDelaySeconds: 5
-            periodSeconds: 10
-        command:
-          - cluster-logging-operator
-        env:
-          - name: WATCH_NAMESPACE
-            valueFrom:
-              fieldRef:
-                fieldPath: metadata.annotations['olm.targetNamespaces']
-          - name: POD_NAME
-            valueFrom:
-              fieldRef:
-                fieldPath: metadata.name
-          - name: OPERATOR_NAME
-            value: "cluster-logging-operator"
-          - name: FLUENTD_IMAGE
-            value: "quay.io/openshift-logging/fluentd:1.14.5"
-          - name: LOGFILEMETRICEXPORTER_IMAGE
-            value: "quay.io/openshift-logging/log-file-metric-exporter:latest"
+ replicas: 1
+ selector:
+   matchLabels:
+     name: cluster-logging-operator
+ template:
+   metadata:
+     annotations:
+       target.workload.openshift.io/management: '{"effect": "PreferredDuringScheduling"}'
+     labels:
+       name: cluster-logging-operator
+   spec:
+     containers:
+     - command:
+       - cluster-logging-operator
+       env:
+       - name: WATCH_NAMESPACE
+         valueFrom:
+           fieldRef:
+             fieldPath: metadata.annotations['olm.targetNamespaces']
+       - name: POD_NAME
+         valueFrom:
+           fieldRef:
+             fieldPath: metadata.name
+       - name: OPERATOR_NAME
+         value: cluster-logging-operator
+       image: controller
+       imagePullPolicy: IfNotPresent
+       name: cluster-logging-operator
+       resources: {}
+     nodeSelector:
+       kubernetes.io/os: linux
+     serviceAccountName: cluster-logging-operator

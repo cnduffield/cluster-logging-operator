@@ -1,3 +1,5 @@
 resources:
-- ../default
-- ../samples
+  - bases/clusterlogging.clusterserviceversion.yaml
+  - ../default
+  - ../samples
+  - ../scorecard

@@ -1,4 +1,4 @@
- linters:
+linters:
   disable-all: true
   enable:
     - bodyclose

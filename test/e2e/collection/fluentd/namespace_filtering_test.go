@@ -2,10 +2,12 @@ package fluentd
 
 import (
 	"fmt"
-	"github.com/openshift/cluster-logging-operator/internal/constants"
-	framework "github.com/openshift/cluster-logging-operator/test/framework/e2e"
 	"path/filepath"
 	"runtime"
+
+	"github.com/openshift/cluster-logging-operator/internal/constants"
+	"github.com/openshift/cluster-logging-operator/test"
+	framework "github.com/openshift/cluster-logging-operator/test/framework/e2e"
 
 	"github.com/ViaQ/logerr/log"
 	. "github.com/onsi/ginkgo"
@@ -26,8 +28,8 @@ var _ = Describe("[Collection] Namespace filtering", func() {
 		e2e              = framework.NewE2ETestFramework()
 		rootDir          string
 	)
-	appNamespace1 := "application-ns1"
-	appNamespace2 := "application-ns2"
+	appNamespace1 := test.UniqueName("application-ns1")
+	appNamespace2 := test.UniqueName("application-ns2")
 
 	BeforeEach(func() {
 		if _, err = oc.Literal().From("oc create ns %s", appNamespace1).Run(); err != nil {

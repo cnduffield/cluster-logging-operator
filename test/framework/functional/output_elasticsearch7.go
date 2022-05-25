@@ -1,11 +1,13 @@
 package functional
 
 import (
-	"github.com/openshift/cluster-logging-operator/internal/runtime"
 	"strings"
+
+	"github.com/openshift/cluster-logging-operator/internal/runtime"
 
 	"github.com/ViaQ/logerr/log"
 	logging "github.com/openshift/cluster-logging-operator/apis/logging/v1"
+	corev1 "k8s.io/api/core/v1"
 )
 
 const (
@@ -22,6 +24,7 @@ func (f *CollectorFunctionalFramework) addES7Output(b *runtime.PodBuilder, outpu
 	b.AddContainer(logging.OutputTypeElasticsearch, ElasticSearchImage).
 		AddEnvVar("discovery.type", "single-node").
 		AddRunAsUser(2000).
+		WithPullPolicy(corev1.PullIfNotPresent). // Docker image, excessive pulling will exceed quota and fail.
 		End()
 	return nil
 }

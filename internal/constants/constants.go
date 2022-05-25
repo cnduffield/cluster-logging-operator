@@ -45,6 +45,8 @@ const (
 const (
 	SingletonName = "instance"
 	OpenshiftNS   = "openshift-logging"
+	OperatorName  = "cluster-logging-operator"
+
 	// global proxy / trusted ca bundle consts
 	ProxyName = "cluster"
 

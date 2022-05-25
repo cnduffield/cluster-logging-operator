@@ -14,3 +14,4 @@ patchesJson6902:
     version: v1
     kind: CustomResourceDefinition
     name: clusterloggings.logging.openshift.io
+patches/
