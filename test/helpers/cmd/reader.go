@@ -2,13 +2,11 @@ package cmd
 
 import (
 	"bufio"
-	"bytes"
 	"context"
 	"errors"
-	"fmt"
-	"github.com/openshift/cluster-logging-operator/test/runtime"
 	"os/exec"
-	"strings"
+
+	"github.com/openshift/cluster-logging-operator/test/runtime"
 
 	"github.com/ViaQ/logerr/log"
 	"github.com/openshift/cluster-logging-operator/test"
@@ -47,7 +45,7 @@ func NewReader(cmd *exec.Cmd) (*Reader, error) {
 // Read is the usual io.Reader, no timeout.
 func (r *Reader) Read(b []byte) (int, error) {
 	n, err := r.r.Read(b)
-	return n, r.readErr(err)
+	return n, closeOnErr(r, err)
 }
 
 // ReadLine reads a line of text (with newline) as a string.
@@ -69,7 +67,7 @@ func (r *Reader) ReadLineContext(ctx context.Context) (string, error) {
 	go func() { line, err = r.r.ReadString('\n'); close(read) }()
 	select {
 	case <-read:
-		return line, r.readErr(err)
+		return line, closeOnErr(r, err)
 	case <-ctx.Done():
 		r.Close()
 		return "", ctx.Err()
@@ -81,11 +79,7 @@ func (r *Reader) ReadLineContext(ctx context.Context) (string, error) {
 // Returns the error returned by the sub-process.
 func (r *Reader) Close() error {
 	_ = r.cmd.Process.Kill()
-	err := r.cmd.Wait()
-	if err != nil {
-		return fmt.Errorf("%w: %s", err, strings.TrimSpace(r.stderr.b.String()))
-	}
-	return nil
+	return closeErr(r.cmd.Wait(), r.stderr)
 }
 
 // TailReader returns a CmdReader that tails file at path on pod.
@@ -112,29 +106,4 @@ func TailReaderForContainer(pod *corev1.Pod, containerName, path string) (*Reade
 // It returns io.EOF at the end of the file.
 func FileReader(pod *corev1.Pod, path string) (*Reader, error) {
 	return NewReader(runtime.Exec(pod, "cat", path))
-}
-
-// readErr if err != nil close and return a combined read+exit error.
-func (r *Reader) readErr(err error) error {
-	if err != nil {
-		if err2 := r.Close(); err2 != nil {
-			return fmt.Errorf("%v: %w", err, err2)
-		}
-	}
-	return err
-}
-
-const stderrLimit = 1024
-
-type stderrBuffer struct{ b bytes.Buffer }
-
-func (b *stderrBuffer) Write(data []byte) (int, error) {
-	max := stderrLimit - b.b.Len()
-	if max < 0 {
-		max = 0
-	}
-	if len(data) > max {
-		data = data[:max]
-	}
-	return b.b.Write(data)
 }
