@@ -29,17 +29,17 @@ $(CONTROLLER_GEN): $(BINGO_DIR)/controller-gen.mod
 	@echo "(re)installing $(GOBIN)/controller-gen-v0.5.0"
 	@cd $(BINGO_DIR) && $(GO) build -mod=mod -modfile=controller-gen.mod -o=$(GOBIN)/controller-gen-v0.5.0 "sigs.k8s.io/controller-tools/cmd/controller-gen"
 
-GOLANGCI_LINT := $(GOBIN)/golangci-lint-v1.27.0
+GOLANGCI_LINT := $(GOBIN)/golangci-lint-v1.45.0
 $(GOLANGCI_LINT): $(BINGO_DIR)/golangci-lint.mod
 	@# Install binary/ries using Go 1.14+ build command. This is using bwplotka/bingo-controlled, separate go module with pinned dependencies.
-	@echo "(re)installing $(GOBIN)/golangci-lint-v1.27.0"
-	@cd $(BINGO_DIR) && $(GO) build -mod=mod -modfile=golangci-lint.mod -o=$(GOBIN)/golangci-lint-v1.27.0 "github.com/golangci/golangci-lint/cmd/golangci-lint"
+	@echo "(re)installing $(GOBIN)/golangci-lint-v1.45.0"
+	@cd $(BINGO_DIR) && $(GO) build -mod=mod -modfile=golangci-lint.mod -o=$(GOBIN)/golangci-lint-v1.45.0 "github.com/golangci/golangci-lint/cmd/golangci-lint"
 
-JUNITREPORT := $(GOBIN)/junitreport
+JUNITREPORT := $(GOBIN)/junitreport-v0.0.0-20201103150245-a5287ef1495b
 $(JUNITREPORT): $(BINGO_DIR)/junitreport.mod
 	@# Install binary/ries using Go 1.14+ build command. This is using bwplotka/bingo-controlled, separate go module with pinned dependencies.
-	@echo "(re)installing $(GOBIN)/junitreport"
-	@cd $(BINGO_DIR) && $(GO) build -mod=mod -modfile=junitreport.mod -o=$(GOBIN)/junitreport "github.com/openshift/release/tools/junitreport"
+	@echo "(re)installing $(GOBIN)/junitreport-v0.0.0-20201103150245-a5287ef1495b"
+	@cd $(BINGO_DIR) && $(GO) build -mod=mod -modfile=junitreport.mod -o=$(GOBIN)/junitreport-v0.0.0-20201103150245-a5287ef1495b "github.com/openshift/release/tools/junitreport"
 
 KUSTOMIZE := $(GOBIN)/kustomize-v3.8.7
 $(KUSTOMIZE): $(BINGO_DIR)/kustomize.mod

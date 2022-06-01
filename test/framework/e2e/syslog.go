@@ -4,10 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/openshift/cluster-logging-operator/internal/constants"
-	"github.com/openshift/cluster-logging-operator/internal/factory"
-	"github.com/openshift/cluster-logging-operator/internal/runtime"
-	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	"log"
 	"math/rand"
 	"os"
@@ -15,6 +11,11 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/openshift/cluster-logging-operator/internal/constants"
+	"github.com/openshift/cluster-logging-operator/internal/factory"
+	"github.com/openshift/cluster-logging-operator/internal/runtime"
+	apierrors "k8s.io/apimachinery/pkg/api/errors"
 
 	"github.com/openshift/cluster-logging-operator/test/helpers/types"
 
@@ -444,7 +445,7 @@ func (tc *E2ETestFramework) DeploySyslogReceiver(testDir string, protocol corev1
 }
 
 func (tc *E2ETestFramework) CreateSyslogReceiverSecrets(testDir, logStoreName, secretName string) (*corev1.Secret, error) {
-	workingDir := fmt.Sprintf("/tmp/clo-test-%d", rand.Intn(10000))
+	workingDir := fmt.Sprintf("/tmp/clo-test-%d", rand.Intn(10000)) //nolint:gosec
 	clolog.V(3).Info("Generating Pipeline certificates for", "rsyslog-receiver", workingDir)
 	if _, err := os.Stat(workingDir); os.IsNotExist(err) {
 		if err = os.MkdirAll(workingDir, 0766); err != nil {
