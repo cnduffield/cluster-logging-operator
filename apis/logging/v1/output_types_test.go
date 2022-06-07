@@ -14,6 +14,7 @@ var _ = Describe("OutputSpec", func() {
 			OutputTypeSyslog,
 			OutputTypeCloudwatch,
 			OutputTypeLoki,
+			OutputTypeGCloudLogging,
 		} {
 			Expect(IsOutputTypeName(s)).To(BeTrue(), "expect recognize %s", s)
 		}

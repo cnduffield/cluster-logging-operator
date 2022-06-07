@@ -4,6 +4,7 @@ const (
 	SingletonName = "instance"
 	OpenshiftNS   = "openshift-logging"
 	// global proxy / trusted ca bundle consts
+	BearerTokenFileKey         = "token"
 	ProxyName                  = "cluster"
 	SharedKey                  = "shared_key"
 	Passphrase                 = "passphrase"
@@ -49,6 +50,32 @@ const (
 	LogfilesmetricImageEnvVar     = "LOGFILEMETRICEXPORTER_IMAGE"
 	CertEventName                 = "cluster-logging-certs-generate"
 	ClusterInfrastructureInstance = "cluster"
+
+	//Google Cloud Logging Put all here just for testing
+	Gdata_dir = "/data/vector"
+	//[api]
+	GAPIenabled    = true
+	GAPIaddress    = "127.0.0.1:8686"
+	GAPIplayground = false
+
+	//[sources.demo_logs]
+	GSourcestype   = "demo_logs"
+	GSourcesformat = "shuffle"
+	GSourceslines  = "[" + "Line 1" + "," + "Line 2" + "]"
+
+	//[sources.internal_logs]
+	GSourcesInternaltype     = "internal_logs"
+	GSourcesInternalhost_key = "host"
+
+	//[sinks.gcp_stackdriver_logs]
+	GSyncsLogstype             = "gcp_stackdriver_logs"
+	GSyncsLogsinputs           = "[" + "demo_logs" + "," + "internal_logs" + "]"
+	GSyncsLogscredentials_path = "/var/run/secrets/google/credentials.json"
+	GSyncsLogslog_id           = "vector-logs"
+	GSyncsLogsproject_id       = "prj-caas-gcos-p-ac7a"
+
+	//[sinks.gcp_stackdriver_logs.resource]
+	GSyncsLogsResourcetype = "k8s_pod"
 )
 
 var ReconcileForGlobalProxyList = []string{CollectorTrustedCAName}

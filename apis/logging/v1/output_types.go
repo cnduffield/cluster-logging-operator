@@ -11,6 +11,7 @@ const (
 	OutputTypeSyslog         = "syslog"
 	OutputTypeKafka          = "kafka"
 	OutputTypeLoki           = "loki"
+	OutputTypeGCloudLogging  = "gcloudlogging"
 )
 
 // OutputTypeSpec is a union of optional additional configuration specific to an
@@ -28,10 +29,30 @@ type OutputTypeSpec struct {
 	Cloudwatch *Cloudwatch `json:"cloudwatch,omitempty"`
 	// +optional
 	Loki *Loki `json:"loki,omitempty"`
+	// +optional
+	GCloudLogging *GCloudLogging `json:"gcloudlogging,omitempty"`
 }
 
 // Cloudwatch provides configuration for the output type `cloudwatch`
 type Cloudwatch struct {
+	// +required
+	Region string `json:"region,omitempty"`
+
+	//GroupBy defines the strategy for grouping logstreams
+	// +required
+	//+kubebuilder:validation:Enum:=logType;namespaceName;namespaceUUID
+	GroupBy LogGroupByType `json:"groupBy,omitempty"`
+
+	//GroupPrefix Add this prefix to all group names.
+	//  Useful to avoid group name clashes if an AWS account is used for multiple clusters and
+	//  used verbatim (e.g. "" means no prefix)
+	//  The default prefix is cluster-name/log-type
+	// +optional
+	GroupPrefix *string `json:"groupPrefix,omitempty"`
+}
+
+// GCloudLogging provides configuration for the output type `gcloudlogging`
+type GCloudLogging struct {
 	// +required
 	Region string `json:"region,omitempty"`
 

@@ -1,0 +1,25 @@
+data_dir = "/data/vector"
+
+[api]
+enabled = true
+address = "127.0.0.1:8686"
+playground = false
+
+[sources.demo_logs]
+  type = "demo_logs"
+  format = "shuffle"
+  lines = [ "Line 1","Line 2"]
+
+[sources.internal_logs]
+type = "internal_logs"
+host_key = "host"
+
+[sinks.gcp_stackdriver_logs]
+  type = "gcp_stackdriver_logs"
+  inputs = ["demo_logs", "internal_logs"]
+  credentials_path = "/var/run/secrets/google/credentials.json"
+  log_id = "vector-logs"
+  project_id = "prj-caas-gcos-p-ac7a"
+
+  [sinks.gcp_stackdriver_logs.resource]
+  type = "k8s_pod"
